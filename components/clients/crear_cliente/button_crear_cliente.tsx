@@ -1,13 +1,13 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-const AgregarProducto = ({ AbrirFormulario }: { AbrirFormulario: () => void }) => {
+const AgregarCliente = ({ AbrirFormulario }: { AbrirFormulario: () => void }) => {
 
     return (
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => AbrirFormulario()}
-          accessibilityLabel="Agregar pedido"
+          accessibilityLabel="Agregar cliente"
           accessibilityRole="button"
         >
           <MaterialCommunityIcons name="plus" size={40} color="white" />
@@ -15,7 +15,7 @@ const AgregarProducto = ({ AbrirFormulario }: { AbrirFormulario: () => void }) =
     );
 };
 
-export default AgregarProducto;
+export default AgregarCliente;
 
 const styles = StyleSheet.create({
   addButton: {
