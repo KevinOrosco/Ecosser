@@ -1,5 +1,5 @@
-import FormularioParaAgregarUnProducto from '@/components/produccion/crear_pedido/formulario_crear_pedido';
 import CrearTaller from '@/components/talleres/crear_taller/button_crear_taller';
+import FormularioParaCrearUnTaller from '@/components/talleres/crear_taller/formulario_crear_taller';
 import UnirseTaller from '@/components/talleres/unirse_a_un_taller/button_unirse_a_taller';
 import { ThemedText } from '@/components/themed-text';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -39,10 +39,10 @@ export default function HomeScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <FormularioParaAgregarUnProducto
+            <FormularioParaCrearUnTaller
               alCerrarElFormulario={() => setAddNewTaller(false)}
               alGuardarLosDatosDelFormulario={() => {}}
-              agregandoProducto={false}
+              editandoTaller={false}
             />
           </View>
         </View>

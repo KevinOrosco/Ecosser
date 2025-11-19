@@ -28,6 +28,13 @@ export interface Product {
   updated?: string;
 }
 
+export interface TallerData {
+    id?: string;
+    nombre: string;
+    icon?: string; // Nombre del archivo de imagen si se sube (o URI temporal)
+    owner_id: string;
+}
+
 export interface VentaProduct extends Product {
   quantityInSale: number;
 }
@@ -267,35 +274,51 @@ export const deleteClient = async (id: string): Promise<ApiResponse> => {
   }
 };
 
-export const getTalleresByOwner = async (ownerId: string): Promise<ApiResponse<Product[]>> => {
-  try {
-    const response = await axiosInstance.get('/api/collections/talleres/records', {
-      params: {
-        filter: `owner_id = "${ownerId}"`,
-      },
-    });
+export const getTalleresByOwner = async (ownerId: string): Promise<ApiResponse<TallerData[]>> => {
+    try {
+        const response = await axiosInstance.get('/api/collections/talleres/records', {
+            params: {
+                filter: `owner_id = "${ownerId}"`,
+            },
+        });
 
-    return { success: true, data: response.data.items };
-  } catch (error: any) {
-    console.error("Error en getTalleresByOwner:", error);
-    return {
-      success: false,
-      error: "No se pudieron cargar los talleres"
-    };
-  }
+        return { success: true, data: response.data.items };
+    } catch (error: any) {
+        console.error("Error en getTalleresByOwner:", error);
+        return {
+            success: false,
+            error: "No se pudieron cargar los talleres"
+        };
+    }
 };
 
-export const createTaller = async (productData: any): Promise<ApiResponse> => {
-  try {
-    const response = await axiosInstance.post('/api/collections/talleres/records', productData);
-    return { success: true, data: response.data };
-  } catch (error: any) {
-    console.error("Error en createTaller:", error);
-    return {
-      success: false,
-      error: "No se pudo agregar el taller"
-    };
-  }
+export const createTallerWithFile = async (formData: FormData): Promise<ApiResponse> => {
+    try {
+        // Axios detectará que es FormData y establecerá automáticamente
+        // el encabezado Content-Type: multipart/form-data.
+        const response = await axiosInstance.post('/api/collections/talleres/records', formData);
+        return { success: true, data: response.data };
+    } catch (error: any) {
+        console.error("Error en createTallerWithFile:", error.response?.data || error.message);
+        return {
+            success: false,
+            // Detalle el error para facilitar la depuración, especialmente en PocketBase.
+            error: error.response?.data?.message || 'Error al intentar crear el taller con archivo.',
+        };
+    }
+};
+
+export const createTaller = async (productData: TallerData): Promise<ApiResponse> => {
+    try {
+        const response = await axiosInstance.post('/api/collections/talleres/records', productData);
+        return { success: true, data: response.data };
+    } catch (error: any) {
+        console.error("Error en createTaller:", error);
+        return {
+            success: false,
+            error: "No se pudo agregar el taller"
+        };
+    }
 };
 
 export const updateTaller = async (id: string, data: any): Promise<ApiResponse> => {
