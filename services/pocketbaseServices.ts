@@ -310,10 +310,21 @@ export const createTallerWithFile = async (formData: FormData): Promise<ApiRespo
 
 export const createTaller = async (formData: FormData): Promise<ApiResponse> => {
     try {
-        const response = await axiosInstance.post('/api/collections/talleres/records', formData);
+        const response = await axiosInstance.post('/api/collections/talleres/records', formData, {
+            headers: {
+                // Esto es crucial en React Native para subidas de archivos
+                'Content-Type': 'multipart/form-data',
+            },
+            // A veces es necesario transformar la petición para evitar que Axios intente serializar el FormData
+            transformRequest: (data, headers) => {
+                return data;
+            },
+        });
+        
         return { success: true, data: response.data };
     } catch (error: any) {
-        console.error("Error en createTaller:", error);
+        console.error("Error completo en createTaller:", error.response ? error.response.data : error.message);
+        
         return {
             success: false,
             error: "No se pudo agregar el taller"

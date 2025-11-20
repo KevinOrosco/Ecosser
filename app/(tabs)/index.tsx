@@ -24,25 +24,31 @@ const handleAddNewTaller = async (tallerData: { nombre: string; icono?: string; 
 
     const formData = new FormData();
     
+    // 1. Datos de texto
     formData.append('name', tallerData.nombre); 
     formData.append('owner_id', user.id); 
 
+    // 2. La Imagen (Aquí está la magia)
     if (tallerData.icono) {
-        try {
-            const response = await fetch(tallerData.icono);
-            const blob = await response.blob();
-            
-            const filename = tallerData.icono.substring(tallerData.icono.lastIndexOf('/') + 1);
+        // Obtenemos el nombre del archivo o generamos uno
+        const filename = tallerData.icono.split('/').pop() || 'image.jpg';
+        
+        // Inferimos el tipo (mime type). Es importante para PocketBase.
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-            formData.append('icon', blob, filename); 
-
-        } catch (e) {
-            console.error("No se pudo adjuntar el icono al FormData:", e);
-            Alert.alert("Advertencia", "El taller se guardará sin icono.");
-
-        }
+        // IMPORTANTE: React Native espera este objeto exacto
+        // TypeScript se quejará porque espera un Blob, por eso usamos 'as any'
+        formData.append('icon', {
+            uri: tallerData.icono, // La URI local (file://...)
+            name: filename,
+            type: type, 
+        } as any);
     }
 
+    console.log("Enviando FormData..."); // Debug
+
+    // Llamamos al servicio
     const result = await createTaller(formData);
 
     setAddNewTaller(false);
