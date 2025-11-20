@@ -1,6 +1,6 @@
 // api.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axiosInstance from './axiosInstance';
+import axiosInstance, { POCKETBASE_URL } from './axiosInstance';
 
 // Interfaces
 export interface User {
@@ -330,6 +330,16 @@ export const createTaller = async (formData: FormData): Promise<ApiResponse> => 
             error: "No se pudo agregar el taller"
         };
     }
+};
+
+export const getFileUrl = (collectionId: string, recordId: string, filename: string): string => {
+  return `${POCKETBASE_URL}/api/files/${collectionId}/${recordId}/${filename}`;
+};
+
+// Función específica para talleres (opcional, pero conveniente)
+export const getTallerImageUrl = (taller: TallerData): string | null => {
+  if (!taller.icon || !taller.id) return null;
+  return getFileUrl('talleres', taller.id, taller.icon);
 };
 
 export const updateTaller = async (id: string, data: any): Promise<ApiResponse> => {
