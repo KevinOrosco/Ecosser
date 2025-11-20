@@ -2,14 +2,57 @@ import CrearTaller from '@/components/talleres/crear_taller/button_crear_taller'
 import FormularioParaCrearUnTaller from '@/components/talleres/crear_taller/formulario_crear_taller';
 import UnirseTaller from '@/components/talleres/unirse_a_un_taller/button_unirse_a_taller';
 import { ThemedText } from '@/components/themed-text';
+import { useAuth } from '@/contexts/AuthProvider';
+import { createTaller } from '@/services/pocketbaseServices';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Alert, Modal, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
+  const { user } = useAuth()
   const [addNewTaller, setAddNewTaller] = useState(false);
   const [joinTaller, setJoinTaller] = useState(false);
+
+const handleAddNewTaller = async (tallerData: { nombre: string; icono?: string; }) => {
+    if (!user) {
+        Alert.alert("Error", "No hay usuario autenticado");
+        return;
+    }
+
+    setAddNewTaller(true);
+
+    const formData = new FormData();
+    
+    formData.append('name', tallerData.nombre); 
+    formData.append('owner_id', user.id); 
+
+    if (tallerData.icono) {
+        try {
+            const response = await fetch(tallerData.icono);
+            const blob = await response.blob();
+            
+            const filename = tallerData.icono.substring(tallerData.icono.lastIndexOf('/') + 1);
+
+            formData.append('icon', blob, filename); 
+
+        } catch (e) {
+            console.error("No se pudo adjuntar el icono al FormData:", e);
+            Alert.alert("Advertencia", "El taller se guardará sin icono.");
+
+        }
+    }
+
+    const result = await createTaller(formData);
+
+    setAddNewTaller(false);
+
+    if (result.success) {
+        Alert.alert("Éxito", "Taller creado correctamente.");
+    } else {
+        Alert.alert("Error", result.error || "Fallo al crear el taller.");
+    }
+};
 
   return (
     <View style={styles.container}>
@@ -41,7 +84,7 @@ export default function HomeScreen() {
           <View style={styles.modalContent}>
             <FormularioParaCrearUnTaller
               alCerrarElFormulario={() => setAddNewTaller(false)}
-              alGuardarLosDatosDelFormulario={() => {}}
+              alGuardarLosDatosDelFormulario={handleAddNewTaller}
               editandoTaller={false}
             />
           </View>

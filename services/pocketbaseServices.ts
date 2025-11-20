@@ -30,7 +30,7 @@ export interface Product {
 
 export interface TallerData {
     id?: string;
-    nombre: string;
+    name: string;
     icon?: string; // Nombre del archivo de imagen si se sube (o URI temporal)
     owner_id: string;
 }
@@ -308,9 +308,9 @@ export const createTallerWithFile = async (formData: FormData): Promise<ApiRespo
     }
 };
 
-export const createTaller = async (productData: TallerData): Promise<ApiResponse> => {
+export const createTaller = async (formData: FormData): Promise<ApiResponse> => {
     try {
-        const response = await axiosInstance.post('/api/collections/talleres/records', productData);
+        const response = await axiosInstance.post('/api/collections/talleres/records', formData);
         return { success: true, data: response.data };
     } catch (error: any) {
         console.error("Error en createTaller:", error);
